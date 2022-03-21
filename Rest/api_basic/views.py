@@ -5,45 +5,47 @@ from .models import Article
 from .serializer import ArticleSerializer
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
 
 
 # Create your views here.
-@csrf_exempt
+@api_view(['GET','POST'])
 def articles_list(request):
   if request.method=='POST':
-    data =JSONParser().parse(request)
-    serialized=ArticleSerializer(data=data)
+   
+    serialized=ArticleSerializer(data=request.data)
     if serialized.is_valid():
       serialized.save()
-      return JsonResponse(serialized.data,status=201)
+      return Response(serialized.data,status=status.HTTP_201_CREATED)
     else:
-      return JsonResponse(serialized.errors,status=400)
+      return Response(serialized.errors,status=status.HTTP_400_BAD_REQUEST)
   articles=Article.objects.all()
   serializer=ArticleSerializer(articles,many=True)
-  return JsonResponse(serializer.data,status=200,safe=False)
+  return Response(serializer.data,status=status.HTTP_200_OK)
 
 
-@csrf_exempt
+@api_view(['GET','PUT','DELETE'])
 def article_item(request,pk):
   try:
     article=Article.objects.get(id=pk)
   except Article.DoesNotExist:
-    return HttpResponse(status=404)
+    return HttpResponse(status=status.HTTP_404_NOT_FOUND)
   
   if request.method=='PUT':
-    data=JSONParser().parse(request)
-
-    serializer=ArticleSerializer(article,data)
+    
+    serializer=ArticleSerializer(article,request.data)
     if serializer.is_valid():
       serializer.save()
-      return JsonResponse(serializer.data,status=202)
+      return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
     else:
-      return JsonResponse(serializer.errors,status=400)
+      return JsonResponse(serializer.errors,status=status.HTTP_404_NOT_FOUND)
 
   elif request.method=='DELETE':
     article.delete()
-    return HttpResponse(status=204)
+    return HttpResponse(status=status.HTTP_204_NO_CONTENT)
   else:
     serializer=ArticleSerializer(article)
-    return JsonResponse(serializer.data,status=200,safe=False)
+    return Response(serializer.data,status=status.HTTP_200_OK)
 
