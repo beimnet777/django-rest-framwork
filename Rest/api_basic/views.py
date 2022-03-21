@@ -1,6 +1,4 @@
-from http import server
-import imp
-from telnetlib import STATUS
+
 from django.shortcuts import render
 from django.http import HttpResponse ,JsonResponse
 from .models import Article
@@ -23,3 +21,29 @@ def articles_list(request):
   articles=Article.objects.all()
   serializer=ArticleSerializer(articles,many=True)
   return JsonResponse(serializer.data,status=200,safe=False)
+
+
+@csrf_exempt
+def article_item(request,pk):
+  try:
+    article=Article.objects.get(id=pk)
+  except Article.DoesNotExist:
+    return HttpResponse(status=404)
+  
+  if request.method=='PUT':
+    data=JSONParser().parse(request)
+
+    serializer=ArticleSerializer(article,data)
+    if serializer.is_valid():
+      serializer.save()
+      return JsonResponse(serializer.data,status=202)
+    else:
+      return JsonResponse(serializer.errors,status=400)
+
+  elif request.method=='DELETE':
+    article.delete()
+    return HttpResponse(status=204)
+  else:
+    serializer=ArticleSerializer(article)
+    return JsonResponse(serializer.data,status=200,safe=False)
+
