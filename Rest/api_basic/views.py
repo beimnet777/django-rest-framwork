@@ -8,9 +8,26 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import generics,mixins
 
 
 # Create your views here.
+
+class ArticleList(generics.GenericAPIView,mixins.ListModelMixin,mixins.CreateModelMixin,mixins.UpdateModelMixin):
+  serializer_class=ArticleSerializer
+  queryset=Article.objects.all()
+  def get(self,request):
+    return self.list(request)
+  def post(self,request):
+    return self.create(request)
+
+
+
+
+
+
+
+
 @api_view(['GET','POST'])
 def articles_list(request):
   if request.method=='POST':
