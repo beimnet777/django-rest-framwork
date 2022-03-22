@@ -1,4 +1,5 @@
 
+
 from django.shortcuts import render
 from django.http import HttpResponse ,JsonResponse
 from .models import Article
@@ -13,13 +14,22 @@ from rest_framework import generics,mixins
 
 # Create your views here.
 
-class ArticleList(generics.GenericAPIView,mixins.ListModelMixin,mixins.CreateModelMixin,mixins.UpdateModelMixin):
+class ArticleList(generics.GenericAPIView,mixins.ListModelMixin,mixins.CreateModelMixin,mixins.UpdateModelMixin,mixins.RetrieveModelMixin,mixins.DestroyModelMixin):
   serializer_class=ArticleSerializer
   queryset=Article.objects.all()
-  def get(self,request):
-    return self.list(request)
+  lookup_field='id'
+  def get(self,request,id=None):
+    if id=="*":
+      return self.list(request)
+    else:
+      return self.retrieve(request)
+    
   def post(self,request):
     return self.create(request)
+  def put(self,request,id=None):
+    return self.update(request)
+  def delete(self,request,id=None):
+    return self.destroy(request)
 
 
 
