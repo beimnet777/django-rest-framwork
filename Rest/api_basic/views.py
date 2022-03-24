@@ -1,5 +1,6 @@
 
 
+
 from django.shortcuts import render
 from django.http import HttpResponse ,JsonResponse
 from .models import Article
@@ -12,6 +13,9 @@ from rest_framework import status
 from rest_framework import generics,mixins
 from rest_framework.authentication import BasicAuthentication,SessionAuthentication,TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets
+
+from api_basic import serializer
 
 
 # Create your views here.
@@ -34,6 +38,10 @@ class ArticleList(generics.GenericAPIView,mixins.ListModelMixin,mixins.CreateMod
     return self.update(request)
   def delete(self,request,id=None):
     return self.destroy(request)
+
+class ArticleModelView(viewsets.ModelViewSet):
+  queryset=Article.objects.all()
+  serializer_class=ArticleSerializer
 
 
 
