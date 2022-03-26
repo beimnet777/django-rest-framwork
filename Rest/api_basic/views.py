@@ -2,9 +2,10 @@
 
 
 from django.shortcuts import render
+from django.contrib.auth.models import User
 from django.http import HttpResponse ,JsonResponse
 from .models import Article
-from .serializer import ArticleSerializer
+from .serializer import ArticleSerializer,UserSerializer
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
@@ -15,7 +16,8 @@ from rest_framework.authentication import BasicAuthentication,SessionAuthenticat
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
 
-from api_basic import serializer
+
+import jwt,datetime
 
 
 # Create your views here.
@@ -42,6 +44,19 @@ class ArticleList(generics.GenericAPIView,mixins.ListModelMixin,mixins.CreateMod
 class ArticleModelView(viewsets.ModelViewSet):
   queryset=Article.objects.all()
   serializer_class=ArticleSerializer
+
+class UserModelView(viewsets.ModelViewSet):
+  queryset=User.objects.all()
+  serializer_class=UserSerializer
+
+  
+  def create(self,request):
+    user=User.objects.create(username=request.POST['username'],
+    first_name=request.POST['first_name'],
+    last_name=request.POST['last_name'],
+    email=request.POST['email'],
+    password=request.POST['password'])
+    user.save()
 
 
 
@@ -87,4 +102,6 @@ def article_item(request,pk):
   else:
     serializer=ArticleSerializer(article)
     return Response(serializer.data,status=status.HTTP_200_OK)
+
+  
 
