@@ -1,8 +1,10 @@
 
 
 
+import re
 from django.shortcuts import render
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from django.http import HttpResponse ,JsonResponse
 from .models import Article
 from .serializer import ArticleSerializer,UserSerializer
@@ -12,6 +14,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics,mixins
+from rest_framework.views import APIView
 from rest_framework.authentication import BasicAuthentication,SessionAuthentication,TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
@@ -57,6 +60,24 @@ class UserModelView(viewsets.ModelViewSet):
     email=request.POST['email'],
     password=request.POST['password'])
     user.save()
+class login(APIView):
+  def post(self,request):
+   
+    user=authenticate(request,username=request.data['username'],password=request.data['password'])
+    
+    if user:
+      payload={
+      'id':user.id,
+      'exp':datetime.datetime.utcnow() +datetime.timedelta(hours=1.0),
+      'iat':datetime.datetime.utcnow()}
+      token=jwt.encode(payload,'secret',algorithm='HS256')
+      response=Response()
+      response.data={
+        'jwt':token
+      }
+      return response
+    return Response(status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 

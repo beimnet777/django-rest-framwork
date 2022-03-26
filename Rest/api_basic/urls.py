@@ -14,5 +14,6 @@ urlpatterns = [
     path('api/v1/<int:pk>',views.article_item),
     path('api/v1/generics/<str:id>',views.ArticleList.as_view()),
     path('api/v1/model/',include(router.urls)),
+    path('api/v1/login',views.login.as_view()),
      
 ]
