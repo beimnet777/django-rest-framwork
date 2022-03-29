@@ -102,6 +102,7 @@
               </div>
             </div>
           </form>
+					<button id="submit2">submit</button>
         </div>
 
         <div id="list-wrapper"></div>
@@ -109,6 +110,24 @@
     </div>
   </body>
   <script>
+		function getCookie(name) {
+			let cookieValue = null;
+			if (document.cookie && document.cookie !== '') {
+					const cookies = document.cookie.split(';');
+					for (let i = 0; i < cookies.length; i++) {
+							const cookie = cookies[i].trim();
+							// Does this cookie string begin with the name we want?
+							if (cookie.substring(0, name.length + 1) === (name + '=')) {
+									cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+									break;
+							}
+					}
+			}
+			return cookieValue;
+	}
+	const csrftoken = getCookie('csrftoken');
+
+
     function list_builder() {
       var url = "http://127.0.0.1:8000/api/v1/generics/*";
       var container = document.getElementById("list-wrapper");
@@ -129,7 +148,7 @@
                   </button>
                 </div>
                 <div style="flex:1">
-                  <button class="btn btn-sm btn-outline-dark delete">-</button>
+                  <button class="btn btn-sm btn-outline-dark delete" >-</button>
                 </div>
               </div>`
             
@@ -138,5 +157,25 @@
         });
     }
 		list_builder();
+	document.getElementById('submit2').addEventListener('click',	
+		function create_article(){
+			console.log('the nation across the river')
+			var url = "http://127.0.0.1:8000/api/v1/model/articles/";
+			fetch(url, {
+				method:'POST',
+				headers:{
+					'Content-type':'application/json',
+					'X-CSRFToken':csrftoken,
+				},
+				body:JSON.stringify({
+					"title": "sew",
+					"name": "kasu",
+					"author": "kasech"
+			})
+			}
+				
+			)
+		
+		});
   </script>
 </html>
