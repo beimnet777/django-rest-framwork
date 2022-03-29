@@ -29,8 +29,8 @@ class ArticleList(generics.GenericAPIView,mixins.ListModelMixin,mixins.CreateMod
   serializer_class=ArticleSerializer
   queryset=Article.objects.all()
   lookup_field='id'
-  authentication_calsses=[TokenAuthentication,]
-  permission_classes = [IsAuthenticated]
+  # authentication_calsses=[TokenAuthentication,]
+  # permission_classes = [IsAuthenticated]
   def get(self,request,id=None):
     if id=="*":
       return self.list(request)
