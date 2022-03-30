@@ -102,7 +102,9 @@
               </div>
             </div>
           </form>
-					<button id="submit2">submit</button>
+          <button id="submit2">submit</button>
+          <button id="submit3">submit3</button>
+          <button id="submit4">submit4</button>
         </div>
 
         <div id="list-wrapper"></div>
@@ -110,23 +112,22 @@
     </div>
   </body>
   <script>
-		function getCookie(name) {
-			let cookieValue = null;
-			if (document.cookie && document.cookie !== '') {
-					const cookies = document.cookie.split(';');
-					for (let i = 0; i < cookies.length; i++) {
-							const cookie = cookies[i].trim();
-							// Does this cookie string begin with the name we want?
-							if (cookie.substring(0, name.length + 1) === (name + '=')) {
-									cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-									break;
-							}
-					}
-			}
-			return cookieValue;
-	}
-	const csrftoken = getCookie('csrftoken');
-
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+    const csrftoken = getCookie("csrftoken");
 
     function list_builder() {
       var url = "http://127.0.0.1:8000/api/v1/generics/*";
@@ -135,10 +136,10 @@
         .then((resp) => resp.json())
         .then(function (data) {
           for (var i in data) {
-						console.log(data[i])
-						var title=data[i].title
-						console.log(title)
-					
+            console.log(data[i]);
+            var title = data[i].title;
+            console.log(title);
+
             var item = `
         <div id="data-row-${i}" class="task-wrapper flex-wrapper">
                 <div style="flex:7">${title}</div>
@@ -150,32 +151,56 @@
                 <div style="flex:1">
                   <button class="btn btn-sm btn-outline-dark delete" >-</button>
                 </div>
-              </div>`
-            
-						container.innerHTML+=item;
-          } 
+              </div>`;
+
+            container.innerHTML += item;
+          }
         });
     }
-		list_builder();
-	document.getElementById('submit2').addEventListener('click',	
-		function create_article(){
-			console.log('the nation across the river')
-			var url = "http://127.0.0.1:8000/api/v1/model/articles/";
-			fetch(url, {
-				method:'POST',
-				headers:{
-					'Content-type':'application/json',
-					'X-CSRFToken':csrftoken,
-				},
-				body:JSON.stringify({
-					"title": "sew",
-					"name": "kasu",
-					"author": "kasech"
-			})
-			}
-				
-			)
-		
-		});
+    list_builder();
+    document
+      .getElementById("submit2")
+      .addEventListener("click", function create_article() {
+        console.log("the nation across the river");
+        var url = "http://127.0.0.1:8000/api/v1/model/articles/";
+        fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+            "X-CSRFToken": csrftoken,
+          },
+          body: JSON.stringify({
+            title: "sew",
+            name: "kasu",
+            author: "kasech",
+          }),
+        });
+      });
+      document.getElementById("submit3").addEventListener('click',
+      function delete_aritcle(){
+        let url="http://127.0.0.1:8000/api/v1/model/articles/5/";
+        fetch(url,{method:"DELETE",
+      headers:{
+        "Content-type":"application/json"
+
+      }});
+
+      });
+      document.getElementById("submit4").addEventListener('click', function partial_update(){
+        var url="http://127.0.0.1:8000/api/v1/model/articles/1/";
+        fetch(url,{
+          method:"PATCH",
+          headers:{
+            "Content-type":"application/json",
+            "X-CSRF Token":csrftoken
+          },
+          body:JSON.stringify({
+            "title":"beiment bekele"
+
+          })
+        })
+        list_builder()
+      });
+      
   </script>
 </html>
